@@ -1,0 +1,10 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_1='/home/firmware/tgni/asgard_boot'
+let g:netrw_dirhist_2='/home/firmware/tgni/asgard_boot/lib'
+let g:netrw_dirhist_3='/home/firmware/tgni/test/alg/hweight'
+let g:netrw_dirhist_4='/home/firmware/tgni/test/c/Makefile'
+let g:netrw_dirhist_5='/home/firmware/tgni/workspace/alg/alg_3rd'
+let g:netrw_dirhist_6='/home/firmware/tgni/lightelf/chip_bake/bake_chip'
+let g:netrw_dirhist_7='/home/firmware/tgni'
+let g:netrw_dirhist_8='/home/firmware/tgni/unicorn/unicorn'
