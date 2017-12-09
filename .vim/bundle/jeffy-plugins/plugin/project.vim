@@ -37,6 +37,7 @@ endif
 
 " Line continuation used here
 let s:cpo_save = &cpo
+let s:filetype = ''
 set cpo&vim
 " Global variables
 if !exists('g:project_data')
@@ -66,8 +67,8 @@ endfunction
 
 " HLUDColor                     {{{1
 " highlight tags data
-function! s:HLUDColor(filetype)
-	if (a:filetype == "c")
+function! s:HLUDColor()
+	if (s:filetype == "c")
 		exec 'syn keyword cUserTypes X_X_X ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
 		exec 'syn keyword cUserDefines X_X_X ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
 		exec 'syn keyword cUserFunctions X_X_X ' . s:HLUDGetTags('f') . s:HLUDGetTags('p')
@@ -78,9 +79,9 @@ function! s:HLUDColor(filetype)
 		exec 'hi cUserDefines ctermfg=blue guifg=blue'
 		exec 'hi cUserFunctions ctermfg=red guifg=red'
 		exec 'hi cUserVariables ctermfg=cyan guifg=cyan'
-		exec 'hi cUserLocals ctermfg=lightgray guifg=lightgray'
+		"exec 'hi cUserLocals ctermfg=lightgray guifg=lightgray'
 		exec 'hi cUserNamespace ctermfg=Magenta guifg=Magenta'
-	elseif (a:filetype == "java")
+	elseif (s:filetype == "java")
 		exec 'syn keyword UserClasses X_X_X ' . s:HLUDGetTags('c')
 		exec 'syn keyword UserFields X_X_X ' . s:HLUDGetTags('f')
 		exec 'syn keyword UserInterfaces X_X_X ' . s:HLUDGetTags('i')
@@ -94,14 +95,14 @@ function! s:HLUDColor(filetype)
 		"exec 'hi UserLocalVars ctermfg=white guifg=white'
 		"exec 'hi UserMethods ctermfg=lightred guifg=lightred'
 		exec 'hi UserPkgs ctermfg=Magenta guifg=Magenta'
-	elseif (a:filetype == "python")
+	elseif (s:filetype == "python")
 		exec 'syn keyword UserTypes X_X_X ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
 		exec 'syn keyword UserDefines X_X_X ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
 		exec 'syn keyword UserFunctions X_X_X ' . s:HLUDGetTags('f') . s:HLUDGetTags('p')
 		exec 'syn keyword UserVariables X_X_X ' . s:HLUDGetTags('v') . s:HLUDGetTags('x')
 		exec 'syn keyword UserClasses X_X_X ' . s:HLUDGetTags('c')
-		"exec 'syn keyword cUserLocals X_X_X ' . s:HLUDGetTags('l') . s:HLUDGetTags('m')
-		exec 'syn keyword cUserNamespace X_X_X ' . s:HLUDGetTags('n')
+		"exec 'syn keyword UserLocals X_X_X ' . s:HLUDGetTags('l') . s:HLUDGetTags('m')
+		exec 'syn keyword UserNamespace X_X_X ' . s:HLUDGetTags('n')
 		exec 'hi UserClasses ctermfg=green guifg=green'
 		exec 'hi UserTypes ctermfg=green guifg=green'
 		exec 'hi UserDefines ctermfg=blue guifg=blue'
@@ -187,16 +188,15 @@ function! s:ProjectLoad()
                 return 1
         endif
 
-	"let l:filetype = ''
 	let l:profile = l:proj_data . '/profile'
 	if filereadable(l:profile)
 		let l:data = readfile(l:profile)
-		let l:filetype = l:data[0]
+		let s:filetype = l:data[0]
 	endif
 
         exe 'cd ' . l:proj_data . "/.."
 
-	if (l:filetype == "java")
+	if (s:filetype == "java")
 		let s:HLUDCFlag = ['c', 'f', 'i', 'l', 'm', 'p']
 		let s:HLUDCType = [' ', ' ', ' ', ' ', ' ', ' ']
         endif
@@ -216,7 +216,7 @@ function! s:ProjectLoad()
 
 	" color user defined.
 	call s:HLUDLoad(l:proj_data . '/udtags')
-	call s:HLUDColor(l:filetype)
+	call s:HLUDColor()
 
 	echon "load project done."
 	return 1
@@ -245,9 +245,9 @@ command! -nargs=0 -complete=file ProjectLoad call s:ProjectLoad()
 command! -nargs=0 -complete=file ProjectQuit call s:ProjectQuit()
 
 aug Project
-        au VimEnter * call s:ProjectLoad()
+	au VimEnter * call s:ProjectLoad()
         au VimLeavePre * call s:ProjectQuit()
-        au BufEnter,FileType c,cpp,java call s:HLUDColor()
+        au BufEnter,FileType c,cpp,java,python call s:HLUDColor()
 aug END
 
 nnoremap <leader>jc :CProjectCreate<cr>
