@@ -21,6 +21,7 @@ using namespace std;
 //std::map < string, char *> kinds;
 char ckinds[] = { 'c', 'd', 'e', 'f', 'g', 'l', 'm', 'n', 'p', 's', 't', 'u', 'v', 'x' };
 char javakinds[] = { 'c', 'f', 'i', 'l', 'm', 'p' };
+char matlabkinds[] = { 'f'};
 
 int main(int argc, char *argv[]) 
 {
@@ -71,12 +72,15 @@ int main(int argc, char *argv[])
 	int nr_tag;
 
 	string filetype = argv[1];
-	if (filetype == "c" || filetype == "cpp" || filetype == "python") {
-		taglist = ckinds; 	
+	if (filetype == "c" || filetype == "c++" || filetype == "python") {
+		taglist = ckinds;
 		nr_tag  = sizeof(ckinds);
 	} else if (filetype == "java") {
 		taglist = javakinds;
 		nr_tag  = sizeof(javakinds);
+	} else if (filetype == "matlab") {
+		taglist = matlabkinds;
+		nr_tag  = sizeof(matlabkinds);
 	}
         for (int i = 0; i < nr_tag; i++) {
                 ofs << dat[taglist[i]] << endl;

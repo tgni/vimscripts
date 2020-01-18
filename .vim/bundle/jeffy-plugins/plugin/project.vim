@@ -44,14 +44,15 @@ if !exists('g:project_data')
         let g:project_data = ".project_vim"
 endif
 
-let s:HLUDCFlag = ['c', 'd', 'e', 'f', 'g', 'l', 'm', 'n', 'p', 's', 't', 'u', 'v', 'x']
-let s:HLUDCType = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+let s:HLUDCFlag = []
+let s:HLUDCType = []
 
 " HLUDLoad                      {{{1
 " load user types
 function! s:HLUDLoad(udtagfile)
         if filereadable(a:udtagfile)
-		let s:HLUDCType = split(system('rfex ' . a:udtagfile), ',', 1)
+		"let s:HLUDCType = split(system('rfex ' . a:udtagfile), ',', 1)
+		let s:HLUDCType = readfile(a:udtagfile)
         endif
 endfunction
 
@@ -68,7 +69,7 @@ endfunction
 " HLUDColor                     {{{1
 " highlight tags data
 function! s:HLUDColor()
-	if (s:filetype == "c")
+	if (s:filetype == "c" || s:filetype == "c++")
 		exec 'syn keyword cUserTypes X_X_X ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
 		exec 'syn keyword cUserDefines X_X_X ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
 		exec 'syn keyword cUserFunctions X_X_X ' . s:HLUDGetTags('f') . s:HLUDGetTags('p')
@@ -98,18 +99,18 @@ function! s:HLUDColor()
 	elseif (s:filetype == "python")
 		exec 'syn keyword UserTypes X_X_X ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
 		exec 'syn keyword UserDefines X_X_X ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
-		exec 'syn keyword UserFunctions X_X_X ' . s:HLUDGetTags('f') . s:HLUDGetTags('p')
+		exec 'syn keyword UserFunctions X_X_X ' . s:HLUDGetTags('f') . s:HLUDGetTags('p') . s:HLUDGetTags('m')
 		exec 'syn keyword UserVariables X_X_X ' . s:HLUDGetTags('v') . s:HLUDGetTags('x')
 		exec 'syn keyword UserClasses X_X_X ' . s:HLUDGetTags('c')
-		"exec 'syn keyword UserLocals X_X_X ' . s:HLUDGetTags('l') . s:HLUDGetTags('m')
 		exec 'syn keyword UserNamespace X_X_X ' . s:HLUDGetTags('n')
 		exec 'hi UserClasses ctermfg=green guifg=green'
 		exec 'hi UserTypes ctermfg=green guifg=green'
 		exec 'hi UserDefines ctermfg=blue guifg=blue'
-		exec 'hi UserFunctions ctermfg=yellow guifg=yellow'
-		"exec 'hi UserVariables ctermfg=cyan guifg=cyan'
-		"exec 'hi UserLocals ctermfg=lightgray guifg=lightgray'
+		exec 'hi UserFunctions ctermfg=red guifg=red'
 		exec 'hi UserNamespace ctermfg=Magenta guifg=Magenta'
+	elseif (s:filetype == "matlab")
+		"exec 'syn keyword UserFunctions X_X_X ' . s:HLUDGetTags('f')
+		"exec 'hi UserFunctions ctermfg=red guifg=red'
 	endif
 endfunction
 
@@ -123,7 +124,8 @@ endfunction
 " }}}
 " ProjectCreate                 {{{1
 " create project data
-function! s:ProjectCreate(filetype)
+"
+function! s:ProjectCreate()
         " create project data directory.
         if !isdirectory(g:project_data)
                 call mkdir(g:project_data, "p")
@@ -131,23 +133,21 @@ function! s:ProjectCreate(filetype)
 
 	let l:profile = g:project_data . '/profile'
 	if !filereadable(l:profile)
-		call system('touch ' . l:profile)
+		call system('filetype.sh >' . l:profile)
 	endif
-	call writefile([a:filetype], l:profile)
 
-	" change tags flags of java
-	if (a:filetype == "java")
-		let s:HLUDCFlag = ['c', 'f', 'i', 'l', 'm', 'p']
-		let s:HLUDCType = [' ', ' ', ' ', ' ', ' ', ' ']
-	endif
-		
+	let l:data=readfile(l:profile)
+	let s:filetype=l:data[0]
+
         " create cscope.files 
-	if (a:filetype == "c")
+	if (s:filetype == "c" || s:filetype == "c++")
 		call system('find '. getcwd() . ' -name "*.[chxsS]" -o -name "*.cpp" -o -name "*.cc" >' . g:project_data . "/cscope.files")
-	elseif (a:filetype == "java")
+	elseif (s:filetype == "java")
 		call system('find '. getcwd() . ' -name "*.java" >' . g:project_data . "/cscope.files")
-	elseif (a:filetype == "python")
+	elseif (s:filetype == "python")
 		call system('find '. getcwd() . ' -name "*.py" >' . g:project_data . "/cscope.files")
+	elseif (s:filetype == "matlab")
+		call system('find '. getcwd() . ' -name "*.m" >' . g:project_data . "/cscope.files")
 	endif
 
         " create tags file
@@ -169,7 +169,7 @@ function! s:ProjectCreate(filetype)
         endif
 
 	if executable('crudt')
-		call system('crudt ' . a:filetype . ' ' . g:project_data . '/tags ' . g:project_data . '/udtags')
+		call system('crudt ' . s:filetype . ' ' . g:project_data . '/tags ' . g:project_data . '/udtags')
 	endif
 
         echon "create project done, "
@@ -178,7 +178,6 @@ function! s:ProjectCreate(filetype)
         return 1
 endfunction
 " }}}
-
 " ProjectLoad                   {{{1
 " load project data
 function! s:ProjectLoad()
@@ -196,10 +195,17 @@ function! s:ProjectLoad()
 
         exe 'cd ' . l:proj_data . "/.."
 
+	" change tags flags of java
 	if (s:filetype == "java")
 		let s:HLUDCFlag = ['c', 'f', 'i', 'l', 'm', 'p']
 		let s:HLUDCType = [' ', ' ', ' ', ' ', ' ', ' ']
-        endif
+	elseif (s:filetype == "c" || s:filetype == "c++" || s:filetype == "python")
+		let s:HLUDCFlag = ['c', 'd', 'e', 'f', 'g', 'l', 'm', 'n', 'p', 's', 't', 'u', 'v', 'x']
+		let s:HLUDCType = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+	elseif (s:filetype == "matlab")
+		let s:HLUDCFlag = ['f']
+		let s:HLUDCType = [' ']
+	endif
 
         " load tags.
 	let &tags = l:proj_data . '/tags,' . &tags
@@ -238,9 +244,7 @@ endfunction
 
 " }}}
 
-command! -nargs=0 -complete=file CProjectCreate call s:ProjectCreate("c")
-command! -nargs=0 -complete=file JavaProjectCreate call s:ProjectCreate("java")
-command! -nargs=0 -complete=file PythonProjectCreate call s:ProjectCreate("python")
+command! -nargs=0 -complete=file ProjectCreate call s:ProjectCreate()
 command! -nargs=0 -complete=file ProjectLoad call s:ProjectLoad()
 command! -nargs=0 -complete=file ProjectQuit call s:ProjectQuit()
 
@@ -250,9 +254,7 @@ aug Project
         au BufEnter,FileType c,cpp,java,python call s:HLUDColor()
 aug END
 
-nnoremap <leader>jc :CProjectCreate<cr>
-nnoremap <leader>jj :JavaProjectCreate<cr>
-nnoremap <leader>jp :PythonProjectCreate<cr>
+nnoremap <leader>jc :ProjectCreate<cr>
 nnoremap <leader>jl :ProjectLoad<cr>
 nnoremap <leader>jq :ProjectQuit<cr>
 

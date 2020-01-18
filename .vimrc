@@ -239,6 +239,7 @@ let g:snip_company  = "Triductor CO. Ltd"
 
 " man.vim - view man page in VIM
 source $VIMRUNTIME/ftplugin/man.vim
+source $VIMRUNTIME/macros/matchit.vim
 
 " cscope
 nmap <leader>ss :cs find s <C-R>=expand("<cword>")<cr><cr>
@@ -271,8 +272,14 @@ nmap <leader>zz <C-w>o
 "autocmd BufRead,BufNewFile *.[ch] if filereadable(fname)
 "autocmd BufRead,BufNewFile *.[ch]   exe 'so ' . fname
 "autocmd BufRead,BufNewFile *.[ch] endif
+autocmd BufEnter *.m compiler mlint
 
 "-------------------------------------------------------------
 "tabular settings 
 "-------------------------------------------------------------
 map <F4> :Tab /=<CR>
+
+"matlab debugger
+"-------------------------------------------------------------
+"au FileType matlab map <buffer> <silent> <F5> :w<CR>:!matlab -nodesktop -nosplash -r "try, run(which('%')), end, quit" <CR><CR>
+"au FileType matlab set foldmethod=syntax foldcolumn=2 foldlevel=33
