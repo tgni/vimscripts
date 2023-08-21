@@ -136,20 +136,10 @@ nnoremap g#  g#z
 " Simulate Microsoft Windows hot-Key
 "--------------------------------------------------------------------------------
 "map windows quick click
-vmap <C-c> "yy
-vmap <C-x> "yd
-nmap <C-v> "yp
-vmap <C-v> "yp
-
-"vmap <C-c> "+y
-"vmap <C-x> "+d
-"nmap <C-v> "+p
-"vmap <C-v> "+p
-"
-"nmap <Leader>c :w!/tmp/x<CR>
-"vmap <Leader>c :w!/tmp/x<CR>
-"nmap <Leader>v :r/tmp/x<CR>
-"vmap <Leader>v :r/tmp/x<CR>
+vmap <C-y> "+y
+vmap <C-x> "+d
+nmap <C-p> "+p
+vmap <C-p> "+p
 
 "ȫѡ
 nmap <C-a> ggvG$
@@ -228,7 +218,7 @@ let g:NERDTreeWinSize = 30
 let g:NERDTreeShowLineNumbers = 1
 let g:NERDTreeQuitOnOpen = 0
 nmap <Leader>f :NERDTreeToggle<CR>
-nmap <Leader>F :NERDTreeFind<CR>
+"nmap <Leader>F :NERDTreeFind<CR>
 "nmap <Leader>n :NERDTreeToggle<CR>
 "nmap <Leader>N :NERDTreeFind<CR>
 
@@ -251,8 +241,8 @@ nmap <leader>sf :cs find f <C-R>=expand("<cfile>")<cr><cr>
 nmap <leader>si :cs find i <C-R>=expand("<cfile>")<cr><cr>
 nmap <leader>sd :cs find d <C-R>=expand("<cword>")<cr><cr>
 
-map <Leader>d :cs find f 
-map <Leader>g :cs find g 
+"map <Leader>f :cs find f 
+"map <Leader>g :cs find g 
 
 " vimgdb.vim
 if has("gdb")

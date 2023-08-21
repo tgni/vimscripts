@@ -70,17 +70,14 @@ endfunction
 " highlight tags data
 function! s:HLUDColor()
 	if (s:filetype == "c" || s:filetype == "c++")
-		exec 'syn keyword cUserTypes X_X_X ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
-		exec 'syn keyword cUserDefines X_X_X ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
-		exec 'syn keyword cUserFunctions X_X_X ' . s:HLUDGetTags('f') . s:HLUDGetTags('p')
-		exec 'syn keyword cUserVariables X_X_X ' . s:HLUDGetTags('v') . s:HLUDGetTags('x')
-		"exec 'syn keyword cUserLocals X_X_X ' . s:HLUDGetTags('l') . s:HLUDGetTags('m')
-		exec 'syn keyword cUserNamespace X_X_X ' . s:HLUDGetTags('n')
+		exec 'syn keyword cUserTypes ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
+		exec 'syn keyword cUserDefines ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
+		exec 'syn keyword cUserFunctions ' . s:HLUDGetTags('f')
+		exec 'syn keyword cUserVariables ' . s:HLUDGetTags('v') . s:HLUDGetTags('x')
 		exec 'hi cUserTypes ctermfg=green guifg=green'
 		exec 'hi cUserDefines ctermfg=blue guifg=blue'
 		exec 'hi cUserFunctions ctermfg=red guifg=red'
 		exec 'hi cUserVariables ctermfg=cyan guifg=cyan'
-		"exec 'hi cUserLocals ctermfg=lightgray guifg=lightgray'
 		exec 'hi cUserNamespace ctermfg=Magenta guifg=Magenta'
 	elseif (s:filetype == "java")
 		exec 'syn keyword UserClasses X_X_X ' . s:HLUDGetTags('c')
@@ -141,7 +138,8 @@ function! s:ProjectCreate()
 
         " create cscope.files 
 	if (s:filetype == "c" || s:filetype == "c++")
-		call system('find '. getcwd() . ' -name "*.[chxsS]" -o -name "*.cpp" -o -name "*.cc" >' . g:project_data . "/cscope.files")
+		"call system('find '. getcwd() . ' -path ./make -prune -o -name "*.[chxsS]" -o -name "*.cpp" -o -name "*.cc" >' . g:project_data . "/cscope.files")
+		call system('find '. getcwd() . ' -path ' . getcwd() . '/make ' . ' -prune -o -name "*.[chxsS]" -o -name "*.cpp" -o -name "*.cc" >' . g:project_data . "/cscope.files")
 	elseif (s:filetype == "java")
 		call system('find '. getcwd() . ' -name "*.java" >' . g:project_data . "/cscope.files")
 	elseif (s:filetype == "python")
@@ -200,8 +198,8 @@ function! s:ProjectLoad()
 		let s:HLUDCFlag = ['c', 'f', 'i', 'l', 'm', 'p']
 		let s:HLUDCType = [' ', ' ', ' ', ' ', ' ', ' ']
 	elseif (s:filetype == "c" || s:filetype == "c++" || s:filetype == "python")
-		let s:HLUDCFlag = ['c', 'd', 'e', 'f', 'g', 'l', 'm', 'n', 'p', 's', 't', 'u', 'v', 'x']
-		let s:HLUDCType = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+		let s:HLUDCFlag = ['c', 'd', 'e', 'f', 'g', 's', 't', 'u', 'v', 'x']
+		let s:HLUDCType = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 	elseif (s:filetype == "matlab")
 		let s:HLUDCFlag = ['f']
 		let s:HLUDCType = [' ']
@@ -244,9 +242,9 @@ endfunction
 
 " }}}
 
-command! -nargs=0 -complete=file ProjectCreate call s:ProjectCreate()
-command! -nargs=0 -complete=file ProjectLoad call s:ProjectLoad()
-command! -nargs=0 -complete=file ProjectQuit call s:ProjectQuit()
+command! -nargs=? -complete=file ProjectCreate call s:ProjectCreate()
+command! -nargs=? -complete=file ProjectLoad call s:ProjectLoad()
+command! -nargs=? -complete=file ProjectQuit call s:ProjectQuit()
 
 aug Project
 	au VimEnter * call s:ProjectLoad()

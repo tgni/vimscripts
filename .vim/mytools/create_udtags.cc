@@ -14,59 +14,52 @@
 #include "sstream"
 #include <fstream>  
 #include "map"
+#include <unordered_set>
 
 using namespace std;
 
-//lack of STL knowledge, TODO
-//std::map < string, char *> kinds;
-char ckinds[] = { 'c', 'd', 'e', 'f', 'g', 'l', 'm', 'n', 'p', 's', 't', 'u', 'v', 'x' };
+char ckinds[] = { 'c', 'd', 'e', 'f', 'g', 's', 't', 'u', 'v', 'x' };
 char javakinds[] = { 'c', 'f', 'i', 'l', 'm', 'p' };
 char matlabkinds[] = { 'f'};
 
 int main(int argc, char *argv[]) 
 {
-        ifstream ifs;
-        ofstream ofs;
-        string line;
-        std::map < int, string > dat;
-        int type;
-       
-        if (argc != 4) {
-                cout << "Usage: ./crudt <filetype> <tags> <udtags>.\n" << endl;
-                return -1;
-        }
+	ifstream ifs;
+	ofstream ofs;
+	string line;
+	std::map <int, unordered_set<string>> dat;
+	int type;
 
-        string tmp1 = argv[2];
-        string tmp2 = argv[3];
-        if((tmp1.find("tags") == -1) || (tmp2.find("udtags") == -1)) {
-                cout << "error params.\n" << endl;
-                return -1;
-        }
+	if (argc != 4) {
+		cout << "Usage: ./crudt <filetype> <tags> <udtags>.\n" << endl;
+		return -1;
+	}
 
-        ifs.open(argv[2]);
-        ofs.open(argv[3]);
+	string tmp1 = argv[2];
+	string tmp2 = argv[3];
+	if((tmp1.find("tags") == tmp1.npos) || (tmp2.find("udtags") == tmp2.npos)) {
+		cout << "error params.\n" << endl;
+		return -1;
+	}
 
-        while (std::getline(ifs, line)) {
+	ifs.open(argv[2]);
+	ofs.open(argv[3]);
 
-                string key = line.substr(0, line.find("\t"));
-                if ((key.find("::") != -1) ||
-                    (key.find("operator") != -1) ||
-                    (key.find("~") != -1))
+	while (std::getline(ifs, line)) {
+		string key = line.substr(0, line.find("\t"));
+		if ((key.find("::") != key.npos) || (key.find("operator") != key.npos) || (key.find("~") != key.npos) || (key.find("$") != key.npos))
+			continue;
+		if ((key.find("contains") != key.npos) || (key.find("oneline") != key.npos) || (key.find("fold") != key.npos) || (key.find("display") != key.npos))
+			continue;
+		if ((key.find("extend") != key.npos) || (key.find("concealends") != key.npos))
 			continue;
 
 		if ((type = line.find(";\"\t")) == -1)
-                        continue;
+			continue;
 
-                type = line[type + 3];
-		key += " ";
-
-		/* I want a hashtable to store keys in it, 
-		 * and provide find function.
-		 * and create dat[type] at the same time.
-		 */
-		//if (dat[type].find(key) == -1)
-		dat[type] += key;
-        }
+		type = line[type + 3];
+		dat[type].insert(key);
+	}
 
 	char *taglist;
 	int nr_tag;
@@ -82,11 +75,14 @@ int main(int argc, char *argv[])
 		taglist = matlabkinds;
 		nr_tag  = sizeof(matlabkinds);
 	}
-        for (int i = 0; i < nr_tag; i++) {
-                ofs << dat[taglist[i]] << endl;
-        }
-        ofs.flush();
-        ofs.close();
 
-        return 0;  
+	for (int i = 0; i < nr_tag; i++) {
+		for (auto it = dat[taglist[i]].cbegin(); it != dat[taglist[i]].cend(); ++it)
+			ofs << *it << ' ';
+		ofs << endl;
+	}
+	ofs.flush();
+	ofs.close();
+
+	return 0;
 }
