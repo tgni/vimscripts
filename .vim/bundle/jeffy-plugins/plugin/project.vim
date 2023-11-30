@@ -51,8 +51,8 @@ let s:HLUDCType = []
 " load user types
 function! s:HLUDLoad(udtagfile)
         if filereadable(a:udtagfile)
-		"let s:HLUDCType = split(system('rfex ' . a:udtagfile), ',', 1)
-		let s:HLUDCType = readfile(a:udtagfile)
+		let s:HLUDCType = split(system('rfex ' . a:udtagfile), ',', 1)
+		"let s:HLUDCType = readfile(a:udtagfile)
         endif
 endfunction
 
@@ -70,22 +70,38 @@ endfunction
 " highlight tags data
 function! s:HLUDColor()
 	if (s:filetype == "c" || s:filetype == "c++")
-		exec 'syn keyword cUserTypes ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
-		exec 'syn keyword cUserDefines ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
-		exec 'syn keyword cUserFunctions ' . s:HLUDGetTags('f')
-		exec 'syn keyword cUserVariables ' . s:HLUDGetTags('v') . s:HLUDGetTags('x')
+		if s:HLUDGetTags('t') != '' || s:HLUDGetTags('u') != '' || s:HLUDGetTags('s') != '' || s:HLUDGetTags('g') != '' || s:HLUDGetTags('c') != ''
+			exec 'syn keyword cUserTypes ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
+		endif
+		if s:HLUDGetTags('d') != '' || s:HLUDGetTags('e') != ''
+			exec 'syn keyword cUserDefines ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
+		endif
+		if s:HLUDGetTags('f') != ''
+			exec 'syn keyword cUserFunctions ' . s:HLUDGetTags('f')
+		endif
+		if s:HLUDGetTags('v') != '' || s:HLUDGetTags('x') != ''
+			exec 'syn keyword cUserVariables ' . s:HLUDGetTags('v') . s:HLUDGetTags('x')
+		endif
 		exec 'hi cUserTypes ctermfg=green guifg=green'
 		exec 'hi cUserDefines ctermfg=blue guifg=blue'
 		exec 'hi cUserFunctions ctermfg=red guifg=red'
 		exec 'hi cUserVariables ctermfg=cyan guifg=cyan'
 		exec 'hi cUserNamespace ctermfg=Magenta guifg=Magenta'
 	elseif (s:filetype == "java")
-		exec 'syn keyword UserClasses X_X_X ' . s:HLUDGetTags('c')
-		exec 'syn keyword UserFields X_X_X ' . s:HLUDGetTags('f')
-		exec 'syn keyword UserInterfaces X_X_X ' . s:HLUDGetTags('i')
+		if s:HLUDGetTags('c') != ''
+			exec 'syn keyword UserClasses X_X_X ' . s:HLUDGetTags('c')
+		endif
+		if s:HLUDGetTags('f') != ''
+			exec 'syn keyword UserFields X_X_X ' . s:HLUDGetTags('f')
+		endif
+		if s:HLUDGetTags('i') != ''
+			exec 'syn keyword UserInterfaces X_X_X ' . s:HLUDGetTags('i')
+		endif
 		"exec 'syn keyword UserLocalVars X_X_X ' . s:HLUDGetTags('l')
 		"exec 'syn keyword UserMethods X_X_X ' . s:HLUDGetTags('m')
-		exec 'syn keyword UserPkgs X_X_X ' . s:HLUDGetTags('p')
+		if s:HLUDGetTags('p') != ''
+			exec 'syn keyword UserPkgs X_X_X ' . s:HLUDGetTags('p')
+		endif
 
 		exec 'hi UserClasses ctermfg=green guifg=green'
 		exec 'hi UserFields ctermfg=blue guifg=bule'
@@ -94,12 +110,24 @@ function! s:HLUDColor()
 		"exec 'hi UserMethods ctermfg=lightred guifg=lightred'
 		exec 'hi UserPkgs ctermfg=Magenta guifg=Magenta'
 	elseif (s:filetype == "python")
-		exec 'syn keyword UserTypes X_X_X ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
-		exec 'syn keyword UserDefines X_X_X ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
-		exec 'syn keyword UserFunctions X_X_X ' . s:HLUDGetTags('f') . s:HLUDGetTags('p') . s:HLUDGetTags('m')
-		exec 'syn keyword UserVariables X_X_X ' . s:HLUDGetTags('v') . s:HLUDGetTags('x')
-		exec 'syn keyword UserClasses X_X_X ' . s:HLUDGetTags('c')
-		exec 'syn keyword UserNamespace X_X_X ' . s:HLUDGetTags('n')
+		if s:HLUDGetTags('t') != '' || s:HLUDGetTags('u') != '' || s:HLUDGetTags('s') != '' || s:HLUDGetTags('g') != '' || s:HLUDGetTags('c') != ''
+			exec 'syn keyword UserTypes X_X_X ' . s:HLUDGetTags('t') . s:HLUDGetTags('u') .  s:HLUDGetTags('s') . s:HLUDGetTags('g') . s:HLUDGetTags('c')
+		endif
+		if s:HLUDGetTags('d') != '' || s:HLUDGetTags('e') != ''
+			exec 'syn keyword UserDefines X_X_X ' . s:HLUDGetTags('d') . s:HLUDGetTags('e')
+		endif
+		if s:HLUDGetTags('f') != '' || s:HLUDGetTags('p') != '' || s:HLUDGetTags('m') != ''
+			exec 'syn keyword UserFunctions X_X_X ' . s:HLUDGetTags('f') . s:HLUDGetTags('p') . s:HLUDGetTags('m')
+		endif
+		if s:HLUDGetTags('v') != '' || s:HLUDGetTags('x') != ''
+			exec 'syn keyword UserVariables X_X_X ' . s:HLUDGetTags('v') . s:HLUDGetTags('x')
+		endif
+		if s:HLUDGetTags('c') != ''
+			exec 'syn keyword UserClasses X_X_X ' . s:HLUDGetTags('c')
+		endif
+		if s:HLUDGetTags('n') != ''
+			exec 'syn keyword UserNamespace X_X_X ' . s:HLUDGetTags('n')
+		endif
 		exec 'hi UserClasses ctermfg=green guifg=green'
 		exec 'hi UserTypes ctermfg=green guifg=green'
 		exec 'hi UserDefines ctermfg=blue guifg=blue'
